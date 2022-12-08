@@ -12,19 +12,37 @@
 class DllLoader
 {
 public:
-	DllLoader() {};
-	~DllLoader() {};
+	~DllLoader()
+	{
+		Free();
+	}
 
 	bool Load(std::wstring dll_path)
 	{
 		hModule = LoadLibrary(dll_path.c_str());
 		if (hModule != NULL)
 		{
+			return LoadMethod();
 		}
+
+		return false;
+	}
+
+	bool Free()
+	{
+		bool result = true;
+
+		if (hModule != NULL)
+		{
+			result = FreeLibrary(hModule);
+			hModule = NULL;
+		}
+
+		return result;
 	}
 
 private:
+	virtual bool LoadMethod() = 0;
+
 	HMODULE hModule = NULL;
 };
-
-
